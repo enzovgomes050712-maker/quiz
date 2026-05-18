@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz: O Brasil Político e as Redes Sociais</title>
+
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================
+       TOKENS & RESET
+    ========================================================== */
+    :root {
+      --bg:          #111114;
+      --surface:     #1a1a20;
+      --surface2:    #22222c;
+      --border:      rgba(255,255,255,.07);
+      --accent:      #8b5cf6;       /* violeta principal */
+      --accent2:     #a78bfa;       /* violeta claro */
+      --accent-glow: rgba(139,92,246,.35);
+      --correct:     #34d399;       /* verde esmeralda */
+      --wrong:       #f87171;       /* vermelho suave */
+      --text:        #e8e8f0;
+      --muted:       #8888a0;
+      --gold:        #fbbf24;
+      --radius:      14px;
+      --radius-lg:   22px;
+      --transition:  .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      /* Subtle noise texture via SVG data-URI */
+      background-image:
+        radial-gradient(ellipse 80% 60% at 70% -10%, rgba(139,92,246,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at -10% 80%, rgba(99,102,241,.12) 0%, transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+    }
+
+    /* ==========================================================
+       LAYOUT WRAPPER
+    ========================================================== */
+    .app {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* ==========================================================
+       UTILITY
+    ========================================================== */
+    .hidden { display: none !important; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2.5rem 2rem;
+      box-shadow: 0 24px 64px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04);
+      animation: fadeUp .5s var(--transition) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      background: rgba(139,92,246,.15);
+      border: 1px solid rgba(139,92,246,.3);
+      border-radius: 99px;
+      padding: .25rem .75rem;
+      margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Syne', sans-serif;
+      line-height: 1.15;
+    }
+
+    /* ==========================================================
+       BUTTONS
+    ========================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      padding: .85rem 1.75rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 0 0 var(--accent-glow);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent2);
+      box-shadow: 0 0 28px 6px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+    .btn-primary:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    /* ==========================================================
+       SCREEN 1 — INTRODUÇÃO
+    ========================================================== */
+    #screen-intro .hero-icon {
+      font-size: 3rem;
+      margin-bottom: 1.2rem;
+      display: block;
+    }
+
+    #screen-intro h1 {
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: #fff;
+      margin-bottom: .6rem;
+    }
+
+    #screen-intro h1 span { color: var(--accent2); }
+
+    #screen-intro .subtitle {
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.65;
+      margin-bottom: 2rem;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .6rem;
+      margin-bottom: 2rem;
+    }
+
+    .topic-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .6rem .85rem;
+      font-size: .8rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    .topic-pill span { font-size: 1.1rem; }
+
+    .input-group { margin-bottom: 1.25rem; }
+    .input-group label {
+      display: block;
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: .45rem;
+    }
+    .input-group input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .85rem 1.1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .input-group input::placeholder { color: var(--muted); opacity: .6; }
+    .input-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* ==========================================================
+       SCREEN 2 — QUIZ
+    ========================================================== */
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .quiz-player {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .quiz-player strong { color: var(--accent2); }
+
+    .quiz-counter {
+      font-size: .8rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: .3rem .85rem;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 1.8rem;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* Category badge */
+    .q-category {
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: .6rem;
+      opacity: .8;
+    }
+
+    /* Question text */
+    .q-text {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1rem, 3.5vw, 1.22rem);
+      color: #fff;
+      line-height: 1.45;
+      margin-bottom: 1.6rem;
+    }
+
+    /* Options */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: .65rem;
+    }
+
+    .option-btn {
+      text-align: left;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: .9rem 1.15rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), transform .15s;
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      line-height: 1.4;
+    }
+    .option-btn .letter {
+      min-width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 6px;
+      background: rgba(255,255,255,.06);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      flex-shrink: 0;
+      margin-top: .05rem;
+      transition: background var(--transition);
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--accent2);
+      background: rgba(139,92,246,.1);
+      transform: translateX(3px);
+    }
+    .option-btn:hover:not(:disabled) .letter {
+      background: var(--accent);
+    }
+
+    /* Feedback states */
+    .option-btn.correct {
+      border-color: var(--correct);
+      background: rgba(52,211,153,.12);
+    }
+    .option-btn.correct .letter { background: var(--correct); color: #000; }
+
+    .option-btn.wrong {
+      border-color: var(--wrong);
+      background: rgba(248,113,113,.12);
+    }
+    .option-btn.wrong .letter { background: var(--wrong); color: #000; }
+
+    .option-btn.reveal-correct {
+      border-color: var(--correct);
+      opacity: .55;
+    }
+
+    .option-btn:disabled { cursor: default; }
+
+    /* Feedback toast */
+    .feedback-toast {
+      margin-top: 1.1rem;
+      padding: .75rem 1.1rem;
+      border-radius: var(--radius);
+      font-size: .88rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      animation: fadeUp .3s both;
+    }
+    .feedback-toast.ok  { background: rgba(52,211,153,.12); border: 1px solid rgba(52,211,153,.3); color: var(--correct); }
+    .feedback-toast.err { background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.3); color: var(--wrong); }
+
+    /* ==========================================================
+       SCREEN 3 — RESULTADO
+    ========================================================== */
+    .result-hero {
+      text-align: center;
+      padding: .5rem 0 2rem;
+    }
+    .result-emoji {
+      font-size: 3.5rem;
+      display: block;
+      margin-bottom: .75rem;
+      animation: pop .5s cubic-bezier(.18,.89,.32,1.28) both;
+    }
+    @keyframes pop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .result-hero h2 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      color: #fff;
+      margin-bottom: .4rem;
+    }
+    .result-hero .score-line {
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+    .result-hero .score-line strong { color: var(--accent2); font-size: 1.3rem; }
+
+    .result-message {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .9rem 1.1rem;
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    /* Ranking table */
+    .ranking-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      color: var(--accent2);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: .85rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .ranking-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .ranking-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+    }
+    .ranking-table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 400;
+      font-size: .75rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: .5rem .6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .ranking-table td {
+      padding: .65rem .6rem;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      color: var(--text);
+    }
+    .ranking-table tr:last-child td { border-bottom: none; }
+    .ranking-table tr.highlight td { color: #fff; background: rgba(139,92,246,.1); }
+
+    .rank-pos {
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+    .rank-pos.gold   { color: var(--gold); }
+    .rank-pos.silver { color: #c0c0c0; }
+    .rank-pos.bronze { color: #cd7f32; }
+
+    .rank-score {
+      font-weight: 500;
+      color: var(--accent2);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: .75rem;
+      margin-top: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .result-actions .btn { flex: 1; min-width: 140px; }
+
+    /* ==========================================================
+       RESPONSIVIDADE
+    ========================================================== */
+    @media (max-width: 520px) {
+      .card { padding: 1.75rem 1.25rem 1.5rem; }
+      .topics-grid { grid-template-columns: 1fr; }
+      .result-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<main class="app" role="main">
+
+  <!-- ============================================================
+       TELA 1 — IDENTIFICAÇÃO
+  ============================================================ -->
+  <section id="screen-intro" class="card" aria-label="Tela inicial">
+    <span class="hero-icon" aria-hidden="true">🗳️</span>
+    <span class="tag">Projeto Escolar · Quiz Interativo</span>
+
+    <h1>O Brasil Político<br/><span>daqui a 10 anos</span></h1>
+    <p class="subtitle">
+      Explore como os algoritmos moldam opiniões, o impacto das fake news e a urgência
+      do diálogo em tempos de polarização. Responda com atenção — cada pergunta
+      conta uma história sobre o futuro da nossa democracia.
+    </p>
+
+    <!-- Tópicos abordados -->
+    <div class="topics-grid" role="list" aria-label="Temas do quiz">
+      <div class="topic-pill" role="listitem"><span>🔮</span> Algoritmos e bolhas digitais</div>
+      <div class="topic-pill" role="listitem"><span>🤖</span> Fake news e deepfakes</div>
+      <div class="topic-pill" role="listitem"><span>📡</span> Redes sociais em 2035</div>
+      <div class="topic-pill" role="listitem"><span>🤝</span> Polarização e democracia</div>
+    </div>
+
+    <!-- Campo de identificação -->
+    <div class="input-group">
+      <label for="player-name">Seu nome ou apelido</label>
+      <input
+        type="text"
+        id="player-name"
+        placeholder="Ex: Maria, João, Estudante123…"
+        maxlength="30"
+        autocomplete="off"
+        aria-required="true"
+      />
+    </div>
+
+    <button id="btn-start" class="btn btn-primary" disabled aria-label="Iniciar quiz">
+      Iniciar Quiz &#8594;
+    </button>
+  </section>
+
+
+  <!-- ============================================================
+       TELA 2 — PERGUNTAS
+  ============================================================ -->
+  <section id="screen-quiz" class="card hidden" aria-label="Tela do quiz">
+
+    <!-- Cabeçalho: jogador + contador -->
+    <div class="quiz-header">
+      <p class="quiz-player">Jogando como <strong id="lbl-player"></strong></p>
+      <span class="quiz-counter" id="lbl-counter" aria-live="polite"></span>
+    </div>
+
+    <!-- Barra de progresso -->
+    <div class="progress-wrap" role="progressbar" aria-label="Progresso do quiz">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <!-- Categoria da pergunta -->
+    <p class="q-category" id="q-category"></p>
+
+    <!-- Texto da pergunta -->
+    <p class="q-text" id="q-text"></p>
+
+    <!-- Alternativas -->
+    <div class="options-list" id="options-list" role="list"></div>
+
+    <!-- Feedback (acertou / errou) -->
+    <div id="feedback" class="hidden" role="alert" aria-live="assertive"></div>
+
+  </section>
+
+
+  <!-- ============================================================
+       TELA 3 — RESULTADO & RANKING
+  ============================================================ -->
+  <section id="screen-result" class="card hidden" aria-label="Tela de resultado">
+
+    <!-- Herói de resultado -->
+    <div class="result-hero">
+      <span class="result-emoji" id="result-emoji" aria-hidden="true"></span>
+      <h2 id="result-title"></h2>
+      <p class="score-line" id="result-score"></p>
+    </div>
+
+    <!-- Mensagem personalizada -->
+    <p class="result-message" id="result-message"></p>
+
+    <!-- Ranking Top 10 -->
+    <h3 class="ranking-title">🏆 Ranking Global</h3>
+    <table class="ranking-table" aria-label="Tabela de classificação">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Jogador</th>
+          <th>Pontuação</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-body"></tbody>
+    </table>
+
+    <!-- Ações -->
+    <div class="result-actions">
+      <button id="btn-restart" class="btn btn-primary" aria-label="Jogar novamente">
+        ↩ Jogar Novamente
+      </button>
+      <button id="btn-clear" class="btn btn-ghost" aria-label="Limpar ranking">
+        🗑 Limpar Ranking
+      </button>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- =================================================================
+     JAVASCRIPT
+================================================================= -->
+<script>
+'use strict';
+
+/* ------------------------------------------------------------------
+   BANCO DE PERGUNTAS
+   Cada objeto: { category, question, options[], correct (índice 0-based), explanation }
+------------------------------------------------------------------ */
+const QUESTIONS = [
+  {
+    category: '🔮 Algoritmos e Bolhas',
+    question: 'O que é uma "câmara de eco" no contexto das redes sociais?',
+    options: [
+      'Um serviço de streaming que toca as músicas mais populares repetidamente.',
+      'Um ambiente digital em que o usuário só recebe conteúdos que confirmam suas próprias crenças, reforçando sua visão de mundo.',
+      'Uma ferramenta de gravação de podcasts usada por criadores de conteúdo.',
+      'Um recurso de acessibilidade para usuários com deficiência auditiva.'
+    ],
+    correct: 1,
+    explanation: 'As câmaras de eco ocorrem quando os algoritmos filtram conteúdos divergentes, mostrando apenas o que o usuário já concorda, o que intensifica a polarização.'
+  },
+  {
+    category: '🔮 Algoritmos e Bolhas',
+    question: 'Como os algoritmos de recomendação das redes sociais podem influenciar a opinião política de um usuário?',
+    options: [
+      'Exibindo anúncios aleatórios sem relação com o comportamento do usuário.',
+      'Priorizando conteúdos que geram mais engajamento emocional — frequentemente raiva ou medo —, aumentando o tempo de uso e reforçando visões extremas.',
+      'Bloqueando automaticamente perfis de políticos para manter a neutralidade.',
+      'Mostrando igualmente conteúdos de todos os espectros políticos.'
+    ],
+    correct: 1,
+    explanation: 'Plataformas otimizam o engajamento: conteúdos indignantes e polarizadores geram mais cliques e comentários, o que acaba impulsionando narrativas radicais.'
+  },
+  {
+    category: '🔮 Algoritmos e Bolhas',
+    question: 'O que é "hiper-personalização" no contexto das redes sociais do futuro?',
+    options: [
+      'A prática de criar múltiplas contas em diferentes plataformas.',
+      'A capacidade de personalizar o perfil com fotos e cores diferentes.',
+      'O uso avançado de dados comportamentais e IA para entregar conteúdo tão específico que cada usuário experimenta uma "realidade digital" única, moldada a seus interesses e emoções.',
+      'O bloqueio de usuários que publicam conteúdo repetitivo.'
+    ],
+    correct: 2,
+    explanation: 'A tendência para 2035 é que a IA saiba o que você quer ver antes mesmo de você querer, criando feeds completamente individualizados e aprofundando bolhas de filtro.'
+  },
+  {
+    category: '📰 Fake News e Desinformação',
+    question: 'Qual das alternativas abaixo descreve melhor o fenômeno das "fake news"?',
+    options: [
+      'Notícias publicadas por veículos de imprensa tradicional sem revisão editorial.',
+      'Informações falsas ou enganosas deliberadamente criadas e disseminadas para influenciar percepções, comportamentos ou resultados políticos.',
+      'Erros tipográficos em reportagens jornalísticas.',
+      'Opiniões pessoais publicadas em blogs sem embasamento científico.'
+    ],
+    correct: 1,
+    explanation: 'Fake news se distingue do erro jornalístico pela intencionalidade: são fabricadas com o objetivo de enganar e, frequentemente, de influenciar eleições ou desestabilizar governos.'
+  },
+  {
+    category: '📰 Fake News e Desinformação',
+    question: 'O que é um "deepfake" e qual risco ele representa para a democracia?',
+    options: [
+      'Uma técnica de mergulho profundo usada em videogames de realidade virtual.',
+      'Um vídeo ou áudio gerado por inteligência artificial que simula de forma realista falas ou ações de pessoas reais, podendo ser usado para fabricar "provas" de eventos que nunca aconteceram.',
+      'Um formato de podcast que aprofunda discussões políticas com especialistas.',
+      'Um algoritmo que detecta e remove conteúdo falso das redes sociais.'
+    ],
+    correct: 1,
+    explanation: 'Deepfakes podem mostrar políticos dizendo coisas que nunca disseram, ameaçando a integridade de eleições e a confiança pública nas instituições.'
+  },
+  {
+    category: '📰 Fake News e Desinformação',
+    question: 'Por que as fake news se espalham mais rapidamente do que notícias verdadeiras nas redes sociais?',
+    options: [
+      'Porque os algoritmos são programados para favorecer mentiras em detrimento da verdade.',
+      'Porque as plataformas cobram menos para impulsionar conteúdo falso.',
+      'Porque conteúdos falsos costumam ser mais emocionalmente provocativos — causando surpresa, indignação ou medo — o que gera mais compartilhamentos antes de qualquer checagem.',
+      'Porque os usuários têm dificuldade de ler textos longos e preferem manchetes falsas curtas.'
+    ],
+    correct: 2,
+    explanation: 'Estudos do MIT mostram que notícias falsas têm 70% mais chance de serem retuitadas do que as verdadeiras, principalmente por seu apelo emocional.'
+  },
+  {
+    category: '📡 Redes Sociais em 2035',
+    question: 'Qual das tendências abaixo tem MAIOR probabilidade de impactar as redes sociais nos próximos 10 anos?',
+    options: [
+      'Extinção completa das redes sociais, substituídas por correspondência via carta.',
+      'Integração de IA generativa em tempo real para criar e moderar conteúdo, ambientes de realidade aumentada/virtual para socialização e regulação governamental mais rígida sobre plataformas.',
+      'Retorno ao modelo de internet dos anos 90, sem algoritmos de recomendação.',
+      'Proibição global de dispositivos móveis por tratados internacionais.'
+    ],
+    correct: 1,
+    explanation: 'A convergência de IA, metaverso e regulação (como o DSA europeu) deve redesenhar profundamente o ecossistema digital até 2035.'
+  },
+  {
+    category: '📡 Redes Sociais em 2035',
+    question: 'Daqui a 10 anos, qual desafio para a democracia brasileira pode ser potencializado pela evolução das redes sociais?',
+    options: [
+      'O desaparecimento total do voto presencial em favor do voto por rede social.',
+      'O aumento da transparência política, pois todos os cidadãos terão acesso igual à informação.',
+      'A amplificação da desinformação hiper-personalizada por IA, a erosão de espaços comuns de debate e o enfraquecimento da confiança nas instituições democráticas.',
+      'A redução da participação política, pois as redes sociais distraem as pessoas.'
+    ],
+    correct: 2,
+    explanation: 'A personalização extrema pode criar realidades paralelas incompatíveis entre grupos políticos, tornando o consenso democrático cada vez mais difícil de alcançar.'
+  },
+  {
+    category: '🤝 Polarização e Democracia',
+    question: 'O que é "polarização política" e como as redes sociais a intensificam?',
+    options: [
+      'A divisão geográfica do Brasil em regiões com preferências climáticas diferentes.',
+      'O processo pelo qual grupos políticos se afastam progressivamente em suas posições e identidades, enquanto os algoritmos reforçam essa divisão ao exibir apenas conteúdo que valida cada grupo.',
+      'A discordância natural entre parlamentares durante votações no Congresso.',
+      'A tendência de jovens rejeitarem a política tradicional.'
+    ],
+    correct: 1,
+    explanation: 'As redes sociais transformaram diferenças políticas normais em identidades tribais, onde discordar do grupo pode significar exclusão social — um fenômeno chamado de "partidarismo afetivo".'
+  },
+  {
+    category: '🤝 Polarização e Democracia',
+    question: 'Qual estratégia é considerada mais eficaz para combater a polarização política extrema em uma democracia?',
+    options: [
+      'Banir partidos políticos e eleições para eliminar o conflito.',
+      'Censurar completamente as redes sociais e retornar à mídia impressa.',
+      'Fomentar educação midiática crítica, criar espaços de diálogo deliberativo entre grupos opostos e implementar regulação responsável das plataformas sem suprimir a liberdade de expressão.',
+      'Eleger um líder único e forte que una o país em torno de um único projeto.'
+    ],
+    correct: 2,
+    explanation: 'A pesquisa em ciência política aponta que alfabetização midiática e diálogo estruturado são as ferramentas mais robustas contra a polarização, sem comprometer direitos fundamentais.'
+  },
+  {
+    category: '🤝 Polarização e Democracia',
+    question: 'No contexto do debate político brasileiro, o que significa "esquerda" e "direita" em termos gerais?',
+    options: [
+      'Esquerda e direita referem-se apenas à posição física dos parlamentares no plenário do Congresso.',
+      'São termos geográficos que descrevem regiões do Brasil com diferentes tendências eleitorais.',
+      'Esquerda tende a priorizar igualdade social, intervenção estatal e direitos coletivos, enquanto direita tende a valorizar liberdade econômica, tradição e menor intervenção do Estado — embora ambos os espectros sejam internamente diversificados.',
+      'São denominações usadas exclusivamente para descrever times de futebol com perfis políticos diferentes.'
+    ],
+    correct: 2,
+    explanation: 'Esses termos simplificam um espectro complexo. Na prática, existem múltiplas correntes dentro de cada lado, e confundir caricaturas com posições reais é uma das raízes da desinformação política.'
+  },
+  {
+    category: '🔮 Algoritmos e Bolhas',
+    question: 'O que é o "efeito de confirmação" (confirmation bias) e como ele se relaciona com o consumo de informação nas redes sociais?',
+    options: [
+      'A tendência de uma plataforma de confirmar automaticamente cadastros de novos usuários.',
+      'A preferência natural das pessoas por buscar, interpretar e recordar informações que confirmem suas crenças preexistentes — tendência amplificada pelos algoritmos que aprendem com esse comportamento e entregam ainda mais conteúdo consonante.',
+      'Um recurso de notificação que confirma que uma mensagem foi lida pelo destinatário.',
+      'A tendência de usuários mais velhos confiarem mais nas redes sociais do que em jornais impressos.'
+    ],
+    correct: 1,
+    explanation: 'Algoritmos treinados com dados de cliques aprendem rapidamente a alimentar o viés de confirmação, criando um ciclo vicioso entre a psicologia humana e a lógica das plataformas.'
+  },
+  {
+    category: '📰 Fake News e Desinformação',
+    question: 'Qual é o papel da "checagem de fatos" (fact-checking) no combate à desinformação, e quais são suas limitações?',
+    options: [
+      'É completamente ineficaz, pois ninguém lê as checagens.',
+      'Resolve definitivamente o problema da desinformação, pois as plataformas removem todo conteúdo desmentido.',
+      'É uma ferramenta importante que reduz a crença em fake news específicas, mas enfrenta limitações como o "backfire effect" — em que desmentidos podem fortalecer crenças errôneas em alguns casos — e a dificuldade de alcançar a mesma audiência da notícia falsa original.',
+      'Só funciona em países com alta taxa de analfabetismo.'
+    ],
+    correct: 2,
+    explanation: 'O fact-checking é necessário, mas insuficiente sozinho. Precisa ser combinado com educação midiática e mudanças nos incentivos das plataformas para ser verdadeiramente eficaz.'
+  },
+  {
+    category: '📡 Redes Sociais em 2035',
+    question: 'Como a inteligência artificial pode ser simultaneamente uma ameaça e uma ferramenta de proteção à democracia nas redes sociais?',
+    options: [
+      'A IA é apenas uma ameaça; não possui nenhuma aplicação positiva para a democracia.',
+      'A IA é apenas benéfica; vai resolver automaticamente todos os problemas de desinformação.',
+      'A IA pode ser usada para criar e disseminar desinformação em escala (ameaça) e, ao mesmo tempo, para detectar padrões de comportamento falso, identificar deepfakes e moderar conteúdo nocivo de forma mais eficaz do que humanos (proteção) — sua orientação ética depende de quem a controla e com qual propósito.',
+      'A IA não tem relação com redes sociais; é usada apenas na medicina e na engenharia.'
+    ],
+    correct: 2,
+    explanation: 'A mesma tecnologia que cria deepfakes pode detectá-los. O debate sobre governança da IA é, portanto, um debate sobre quem define os valores que guiam essas ferramentas.'
+  },
+  {
+    category: '🤝 Polarização e Democracia',
+    question: 'Por que o respeito mútuo e o diálogo entre grupos políticos opostos são considerados fundamentais para a manutenção da democracia?',
+    options: [
+      'Porque a lei exige que todos os cidadãos concordem com as decisões do governo.',
+      'Porque democracia não exige diálogo — basta que a maioria vote e decida.',
+      'Porque a democracia se sustenta na capacidade de grupos com visões diferentes coexistirem, negociarem e encontrarem soluções compartilhadas; sem esse diálogo, a polarização extrema pode levar à paralisia institucional, ao autoritarismo ou à violência política.',
+      'Porque o respeito mútuo elimina automaticamente as desigualdades sociais.'
+    ],
+    correct: 2,
+    explanation: 'Democracias não morrem apenas por golpes militares: pesquisas mostram que o enfraquecimento gradual das normas de tolerância e respeito mútuo é uma das principais causas do colapso democrático contemporâneo.'
+  }
+];
+
+/* ------------------------------------------------------------------
+   ESTADO DA APLICAÇÃO
+------------------------------------------------------------------ */
+let state = {
+  playerName: '',
+  currentIndex: 0,
+  score: 0,
+  answered: false
+};
+
+/* ------------------------------------------------------------------
+   REFERÊNCIAS DOM
+------------------------------------------------------------------ */
+const screenIntro  = document.getElementById('screen-intro');
+const screenQuiz   = document.getElementById('screen-quiz');
+const screenResult = document.getElementById('screen-result');
+
+const inputName  = document.getElementById('player-name');
+const btnStart   = document.getElementById('btn-start');
+const lblPlayer  = document.getElementById('lbl-player');
+const lblCounter = document.getElementById('lbl-counter');
+const progressBar = document.getElementById('progress-bar');
+const qCategory  = document.getElementById('q-category');
+const qText      = document.getElementById('q-text');
+const optionsList = document.getElementById('options-list');
+const feedback    = document.getElementById('feedback');
+
+const resultEmoji   = document.getElementById('result-emoji');
+const resultTitle   = document.getElementById('result-title');
+const resultScore   = document.getElementById('result-score');
+const resultMessage = document.getElementById('result-message');
+const rankingBody   = document.getElementById('ranking-body');
+const btnRestart    = document.getElementById('btn-restart');
+const btnClear      = document.getElementById('btn-clear');
+
+/* ------------------------------------------------------------------
+   HELPERS DE NAVEGAÇÃO
+------------------------------------------------------------------ */
+function showOnly(section) {
+  [screenIntro, screenQuiz, screenResult].forEach(s => s.classList.add('hidden'));
+  section.classList.remove('hidden');
+  // Força re-trigger da animação
+  section.style.animation = 'none';
+  section.offsetHeight; // reflow
+  section.style.animation = '';
+}
+
+/* ------------------------------------------------------------------
+   TELA 1 — LÓGICA DE INÍCIO
+------------------------------------------------------------------ */
+// Habilita/desabilita botão conforme preenchimento
+inputName.addEventListener('input', () => {
+  const trimmed = inputName.value.trim();
+  btnStart.disabled = trimmed.length === 0;
+});
+
+// Pressionar Enter inicia o quiz
+inputName.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !btnStart.disabled) startQuiz();
+});
+
+btnStart.addEventListener('click', startQuiz);
+
+function startQuiz() {
+  state.playerName = inputName.value.trim();
+  state.currentIndex = 0;
+  state.score = 0;
+  state.answered = false;
+
+  lblPlayer.textContent = state.playerName;
+  showOnly(screenQuiz);
+  renderQuestion();
+}
+
+/* ------------------------------------------------------------------
+   TELA 2 — LÓGICA DO QUIZ
+------------------------------------------------------------------ */
+function renderQuestion() {
+  const total = QUESTIONS.length;
+  const idx   = state.currentIndex;
+  const q     = QUESTIONS[idx];
+
+  // Atualiza contador e progresso
+  lblCounter.textContent = `${idx + 1} / ${total}`;
+  progressBar.style.width = `${((idx) / total) * 100}%`;
+
+  // Atualiza conteúdo
+  qCategory.textContent = q.category;
+  qText.textContent     = q.question;
+
+  // Limpa feedback
+  feedback.className = 'hidden';
+  feedback.textContent = '';
+
+  // Limpa opções anteriores
+  optionsList.innerHTML = '';
+  state.answered = false;
+
+  // Cria botões de opção
+  const letters = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.setAttribute('role', 'listitem');
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => handleAnswer(i, btn));
+    optionsList.appendChild(btn);
+  });
+}
+
+function handleAnswer(selectedIndex, selectedBtn) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q       = QUESTIONS[state.currentIndex];
+  const correct = q.correct;
+  const isRight = selectedIndex === correct;
+
+  // Desabilita todos os botões
+  const allBtns = optionsList.querySelectorAll('.option-btn');
+  allBtns.forEach(btn => btn.disabled = true);
+
+  // Aplica classes visuais
+  if (isRight) {
+    selectedBtn.classList.add('correct');
+    state.score++;
+  } else {
+    selectedBtn.classList.add('wrong');
+    // Revela a correta
+    allBtns[correct].classList.add('reveal-correct');
+  }
+
+  // Exibe feedback com explicação
+  feedback.className = `feedback-toast ${isRight ? 'ok' : 'err'}`;
+  feedback.innerHTML = `
+    <span>${isRight ? '✅' : '❌'}</span>
+    <span><strong>${isRight ? 'Correto!' : 'Incorreto.'}</strong> ${q.explanation}</span>
+  `;
+
+  // Avança após 2.2 segundos
+  setTimeout(() => {
+    state.currentIndex++;
+    if (state.currentIndex < QUESTIONS.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 2200);
+}
+
+/* ------------------------------------------------------------------
+   TELA 3 — RESULTADO E RANKING
+------------------------------------------------------------------ */
+function showResult() {
+  const total  = QUESTIONS.length;
+  const score  = state.score;
+  const pct    = score / total;
+
+  // Emoji e mensagem personalizados por faixa de acerto
+  let emoji, title, message;
+  if (pct === 1) {
+    emoji = '🏆'; title = 'Perfeito!';
+    message = `Parabéns, ${state.playerName}! Você demonstrou domínio total sobre o tema. Continue usando seu conhecimento para promover diálogos mais informados e conscientes.`;
+  } else if (pct >= 0.8) {
+    emoji = '🌟'; title = 'Excelente!';
+    message = `Muito bem, ${state.playerName}! Você tem uma visão sólida sobre o impacto das redes sociais na política. Pequenos reforços e você estará pronto(a) para debater esses temas com profundidade.`;
+  } else if (pct >= 0.6) {
+    emoji = '📚'; title = 'Bom resultado!';
+    message = `${state.playerName}, você conhece os conceitos básicos, mas ainda há espaço para aprofundar. Explore mais sobre algoritmização política e diálogo democrático!`;
+  } else if (pct >= 0.4) {
+    emoji = '🔍'; title = 'Continue explorando!';
+    message = `${state.playerName}, o tema é complexo e requer estudo. Cada acerto é um passo rumo a uma cidadania mais crítica e informada. Tente de novo!`;
+  } else {
+    emoji = '💡'; title = 'Hora de aprender!';
+    message = `${state.playerName}, não se preocupe! O importante é começar. Pesquise sobre câmaras de eco, fake news e polarização — esses são temas que todo cidadão precisa entender.`;
+  }
+
+  resultEmoji.textContent  = emoji;
+  resultTitle.textContent  = title;
+  resultScore.innerHTML    = `Você acertou <strong>${score} de ${total}</strong> perguntas`;
+  resultMessage.textContent = message;
+
+  // Salva no ranking (localStorage)
+  saveToRanking(state.playerName, score);
+  renderRanking(score);
+
+  showOnly(screenResult);
+}
+
+/* ------------------------------------------------------------------
+   RANKING — localStorage
+------------------------------------------------------------------ */
+const STORAGE_KEY = 'quiz_politica_ranking';
+
+function loadRanking() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch { return []; }
+}
+
+function saveToRanking(name, score) {
+  const ranking = loadRanking();
+  ranking.push({ name, score, date: new Date().toLocaleDateString('pt-BR') });
+  // Ordena por pontuação decrescente e mantém Top 10
+  ranking.sort((a, b) => b.score - a.score);
+  const top10 = ranking.slice(0, 10);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(top10));
+}
+
+function renderRanking(currentScore) {
+  const ranking = loadRanking();
+  rankingBody.innerHTML = '';
+
+  if (ranking.length === 0) {
+    rankingBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:1rem;">Nenhuma partida registrada ainda.</td></tr>`;
+    return;
+  }
+
+  const medalClasses = ['gold', 'silver', 'bronze'];
+
+  ranking.forEach((entry, i) => {
+    const tr = document.createElement('tr');
+    // Destaca a linha se for a pontuação atual do jogador atual
+    if (entry.name === state.playerName && entry.score === currentScore) {
+      // Procura a primeira ocorrência para destacar (evitar duplicatas)
+      if (!rankingBody.querySelector('.highlight')) {
+        tr.className = 'highlight';
+      }
+    }
+
+    const posClass  = medalClasses[i] || '';
+    const posLabel  = ['🥇','🥈','🥉'][i] || `${i + 1}º`;
+
+    tr.innerHTML = `
+      <td><span class="rank-pos ${posClass}">${posLabel}</span></td>
+      <td>${escapeHtml(entry.name)}</td>
+      <td><span class="rank-score">${entry.score}/${QUESTIONS.length}</span></td>
+    `;
+    rankingBody.appendChild(tr);
+  });
+}
+
+// Previne XSS ao exibir nomes de usuário
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ------------------------------------------------------------------
+   BOTÕES DA TELA DE RESULTADO
+------------------------------------------------------------------ */
+btnRestart.addEventListener('click', () => {
+  // Limpa input para nova partida
+  inputName.value = '';
+  btnStart.disabled = true;
+  showOnly(screenIntro);
+});
+
+btnClear.addEventListener('click', () => {
+  if (confirm('Deseja realmente apagar todo o ranking? Esta ação não pode ser desfeita.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderRanking(state.score);
+  }
+});
+</script>
+
+</body>
+</html>
